@@ -15,7 +15,7 @@ namespace Crawler.Controllers
         public ProcessoController(IProcesso processo, IProcessosPersist processosPersist)
         {
             _Processo = processo;
-            IProcessosPersist = processosPersist;
+            _ProcessosPersist = processosPersist;
         }
 
         [HttpPost("{id}")]
