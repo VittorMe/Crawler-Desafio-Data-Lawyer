@@ -4,7 +4,8 @@
 - A `ConnectionStrings` está setada para o banco SQLite.\
 Para gerar o banco de dados, basta rodar o migrations na pasca `Crawler` com os comando seguintes: \
  `dotnet ef migrations add init` \
- `dotnet ef database update`
+ `dotnet ef database update` \
+ Caso queria utilizar os dados ja existente na pasta migrations utilize o `update-database` 
 - O arquivo `Crawler.db` será gerado na pasta que foi indicada e ja pode ser aberto no `DB Browser(SQLCipher)`.
 
 ## Utilização de cada Verbo Rest: 
