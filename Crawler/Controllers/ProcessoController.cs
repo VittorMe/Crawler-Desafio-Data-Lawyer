@@ -1,5 +1,6 @@
 using Crawler.Application.Repository.IRepository;
 using Crawler.Persistence.DTO;
+using Crawler.Persistence.Processos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crawler.Controllers
@@ -10,9 +11,11 @@ namespace Crawler.Controllers
     {
 
         private readonly IProcesso _Processo;
-        public ProcessoController(IProcesso processo)
+        private readonly IProcessosPersist _ProcessosPersist;
+        public ProcessoController(IProcesso processo, IProcessosPersist processosPersist)
         {
             _Processo = processo;
+            IProcessosPersist = processosPersist;
         }
 
         [HttpPost("{id}")]
@@ -22,8 +25,8 @@ namespace Crawler.Controllers
             {
                 if (!Utils.Functions.VerificaCodProcesso(id)) return this.StatusCode(StatusCodes.Status400BadRequest, $"Codigo do Processo incorreto!");
 
-                var result = await _Processo.AddProcesso(id); 
-                if (result== null) return NoContent();
+                var result = await _Processo.AddProcesso(id);
+                if (result == null || await _ProcessosPersist.TodosOsCamposSaoNulos(result)) return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar salvar Processo.");
 
                 return Ok(result);
 
@@ -47,7 +50,7 @@ namespace Crawler.Controllers
             }
             catch (Exception err)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar recuperar eventos. Erro.:{err.Message}");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar recuperar Processo. Erro.:{err.Message}");
             }
         }
 

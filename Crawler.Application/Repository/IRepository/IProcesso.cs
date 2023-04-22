@@ -5,7 +5,7 @@ namespace Crawler.Application.Repository.IRepository
 {
     public interface IProcesso
     {
-        Task<ProcessDTO> AddProcesso(string Processo);
+        Task<Domain.Processo> AddProcesso(string Processo);
         Task<bool> DeleteProcesso(int eventoId);
         Task<Domain.Processo> UpdateEvento(int eventoId, Domain.Processo Model);
 

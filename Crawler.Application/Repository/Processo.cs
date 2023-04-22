@@ -24,7 +24,7 @@ namespace Crawler.Application.Repository
             _geralPersist = geralPersist;
         }
 
-        public async Task<ProcessDTO> AddProcesso(string Processo)
+        public async Task<Domain.Processo> AddProcesso(string Processo)
         {
             try
             {
@@ -32,17 +32,17 @@ namespace Crawler.Application.Repository
 
                 var processo = _mapper.Map<Domain.Processo>(listDados);
 
-                if (listDados == null || await _ProcessosPersist.TodosOsCamposSaoNulos(listDados)) return null;
+                if (processo == null || await _ProcessosPersist.TodosOsCamposSaoNulos(processo)) return null;
 
                 _geralPersist.Add<Domain.Processo>(processo);
                 
                 if (await _geralPersist.SaveChangesAsync())
                 {
-                   return _mapper.Map<ProcessDTO>(processo);
+                   return processo;
                    //return _mapper.Map<ProcessDTO>(await _ProcessosPersist.GetProcessoByIdAsync(processo.Id));
                 }
 
-                return listDados;
+                return null;
             }
             catch (Exception ex)
             {
