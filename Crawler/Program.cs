@@ -4,6 +4,7 @@ using Crawler.Persistence;
 using Crawler.Persistence.Context;
 using Crawler.Persistence.Processos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,20 @@ builder.Services.AddControllers().AddNewtonsoftJson(
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c=>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ApiCrawler",
+        Version = "v1",
+        Contact = new OpenApiContact
+        {
+            Name = "Vittor Melo",
+            Email = "vittordemelo@gmail.com",
+            Url = new Uri("https://www.linkedin.com/in/vittor-melo-3258b313a/")
+        }
+    });
+});
 
 //var connection = builder.Configuration["ConnectionStrings:DefaultConnection"];
 //builder.Services.AddDbContext<CrawlerContext>(opt => opt.UseSqlite(connection));
