@@ -1,12 +1,15 @@
 using Crawler.Application.Repository.IRepository;
 using Crawler.Persistence.DTO;
 using Crawler.Persistence.Processos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crawler.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProcessoController : ControllerBase
     {
 
