@@ -39,55 +39,66 @@ namespace Crawler.Persistence
 
         public async Task<ProcessDTO> GetProcesso(string listDadosRef)
         {
-            ProcessDTO processo = new ProcessDTO();
-            MovimentacaoDTO movimentacao = new MovimentacaoDTO();
-            SitProcessoDTO sitProcesso = new SitProcessoDTO();
-            processo.Movimentacoes = new List<MovimentacaoDTO>();
-            processo.SitProcessos = new List<SitProcessoDTO>();
-            var url = string.Format($"http://esaj.tjba.jus.br/cpo/sg/search.do?paginaConsulta=1&cbPesquisa=NUMPROC&tipoNuProcesso=SAJ&numeroDigitoAnoUnificado=&foroNumeroUnificado=&dePesquisaNuUnificado=&dePesquisa={listDadosRef}&pbEnviar=Pesquisar");
-
-            var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
-
-            sitProcesso.NumeroProcesso = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[1]/td[2]/table//tr/td/span[1]").InnerText);
-            sitProcesso.Situacao = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[1]/td[2]/table//tr/td/span[3]").InnerText);
-
-            processo.SitProcessos.Add(sitProcesso);
-
-
-            processo.Classe = FormatText(htmlDocument.DocumentNode.SelectSingleNode("html/body/table[4]//tr/td/table[2]//tr[2]/td[2]/table//tr/td/span/span").InnerText);
-            processo.Area = FormatText(htmlDocument.DocumentNode.SelectSingleNode("//span[@class='labelClass']/following-sibling::text()[1]").InnerText);
-            processo.Assunto = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[4]/td[2]/span").InnerText);
-            processo.Origem = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[5]/td[2]/span/text()").InnerText);
-            processo.Distribuição = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[7]/td[2]/span").InnerText);
-            processo.Relator = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[8]/td[2]/span").InnerText);
-
-
-            var movitacoes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[10]");
-            if (movitacoes.ChildNodes.Count > 0)
+            try
             {
-                var td = movitacoes.ChildNodes;
-                foreach (var item in td)
+                ProcessDTO processo = new ProcessDTO();
+                MovimentacaoDTO movimentacao = new MovimentacaoDTO();
+                SitProcessoDTO sitProcesso = new SitProcessoDTO();
+                processo.Movimentacoes = new List<MovimentacaoDTO>();
+                processo.SitProcessos = new List<SitProcessoDTO>();
+                var url = string.Format($"http://esaj.tjba.jus.br/cpo/sg/search.do?paginaConsulta=1&cbPesquisa=NUMPROC&tipoNuProcesso=SAJ&numeroDigitoAnoUnificado=&foroNumeroUnificado=&dePesquisaNuUnificado=&dePesquisa={listDadosRef}&pbEnviar=Pesquisar");
+
+                var htmlDocument = await _htmlWeb.LoadFromWebAsync(url);
+                if (htmlDocument.DocumentNode.InnerText != null)
                 {
-                    if (item.Name == "tr")
+                    sitProcesso.NumeroProcesso = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[1]/td[2]/table//tr/td/span[1]").InnerText);
+                    sitProcesso.Situacao = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[1]/td[2]/table//tr/td/span[3]").InnerText);
+
+                    processo.SitProcessos.Add(sitProcesso);
+
+
+                    processo.Classe = FormatText(htmlDocument.DocumentNode.SelectSingleNode("html/body/table[4]//tr/td/table[2]//tr[2]/td[2]/table//tr/td/span/span").InnerText);
+                    processo.Area = FormatText(htmlDocument.DocumentNode.SelectSingleNode("//span[@class='labelClass']/following-sibling::text()[1]").InnerText);
+                    processo.Assunto = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[4]/td[2]/span").InnerText);
+                    processo.Origem = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[5]/td[2]/span/text()").InnerText);
+                    processo.Distribuição = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[7]/td[2]/span").InnerText);
+                    processo.Relator = FormatText(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[2]//tr[8]/td[2]/span").InnerText);
+
+
+                    var movitacoes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]//tr/td/table[10]");
+                    if (movitacoes.ChildNodes.Count > 0)
                     {
-                        var format = FormatText(item.InnerText);
-
-                        string[] parts = format.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        string data = parts[0];
-                        string descricao = "";
-                        for (int i = 1; i < parts.Length; i++)
+                        var td = movitacoes.ChildNodes;
+                        foreach (var item in td)
                         {
-                            descricao += parts[i] + " ";
-                        }
-                        descricao = descricao.Trim();
+                            if (item.Name == "tr")
+                            {
+                                var format = FormatText(item.InnerText);
 
-                        movimentacao.DataMovimento = DateTime.ParseExact(data, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        movimentacao.Descricao = FormatText(descricao);
-                        processo.Movimentacoes.Add(movimentacao);
+                                string[] parts = format.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                string data = parts[0];
+                                string descricao = "";
+                                for (int i = 1; i < parts.Length; i++)
+                                {
+                                    descricao += parts[i] + " ";
+                                }
+                                descricao = descricao.Trim();
+
+                                movimentacao.DataMovimento = DateTime.ParseExact(data, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                                movimentacao.Descricao = FormatText(descricao);
+                                processo.Movimentacoes.Add(movimentacao);
+                            }
+                        }
                     }
+                    return processo;
                 }
             }
-            return processo;
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message.ToString());
+            }
+            
+            return null;
         }
 
         public async Task<bool> TodosOsCamposSaoNulos(object obj)

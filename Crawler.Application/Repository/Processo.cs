@@ -29,10 +29,11 @@ namespace Crawler.Application.Repository
             try
             {
                 var listDados = await _ProcessosPersist.GetProcesso(Processo);
+                
+                if (listDados == null || await _ProcessosPersist.TodosOsCamposSaoNulos(listDados)) return null;
 
                 var processo = _mapper.Map<Domain.Processo>(listDados);
 
-                if (processo == null || await _ProcessosPersist.TodosOsCamposSaoNulos(processo)) return null;
 
                 _geralPersist.Add<Domain.Processo>(processo);
                 
