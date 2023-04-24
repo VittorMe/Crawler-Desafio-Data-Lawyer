@@ -49,8 +49,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = String.Format($@"JWT Authorization header using the Bearer scheme.
-                    Enter 'Bearer'[space]. Example: \'Bearer 12345abcdef\'")
+        Description = "JWT Authorization header using the Bearer scheme.\r\n\r\nEnter 'Bearer'[space] eo seu tojen.\r\n\r\n Example: \'Bearer 12345abcdef\'"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
